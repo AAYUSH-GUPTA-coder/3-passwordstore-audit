@@ -8,7 +8,7 @@ or
 
 we show one such method of reading any data off chain below.
 
-**Impact:** Anyone can read the private password, severly breaking the functionality of the proocol.
+**Impact:** Anyone can read the private password, severly breaking the functionality of the protocol.
 
 **Proof of Concept:** (Proof of Code)
 
@@ -48,3 +48,24 @@ The below test case shows how anyone can read the password directly from the blo
    ```
 
 **Recommended Mitigation:** Due to this, the overall architecture of the contract should be rethought. One could encrypt the password off-chain and then store the encrypted password on-chain. This would require the user to remember an additional off-chain password for decryption. However, you'd also likely want to remove the view functions, as you wouldn't want the user to accidentally send a transaction with the password that decrypts your password.
+
+----------------------
+
+### TITLE (Root cause + Impact)
+### [S-#] `PasswordStore::setPassword` has no access controls, meaning a non-owner could change the password
+
+**Description:** The `PasswordStore::setPassword` function is set to be an `external` function. However, the netspec of the function and overall purpose of the smart contract is that `This function allows only the owner to set a new password.`
+
+```javascript
+function setPassword(string memory newPassword) external {
+@>       // @audit - There is no access control 
+        s_password = newPassword;
+        emit SetNetPassword();
+    }
+```
+
+**Impact:** Anyone can set/change the password of the contract, severly breaking the contract intended functionality.
+
+**Proof Of Concept:** 
+
+**Recommended Mitigation:**
