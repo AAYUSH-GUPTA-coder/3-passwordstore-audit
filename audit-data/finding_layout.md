@@ -1,8 +1,8 @@
 ### TITLE (Root cause + Impact)
 
-**Description**
+**Description:**
 
-**Impact**
+**Impact:**
 
 **Proof Of Concept:**
 
