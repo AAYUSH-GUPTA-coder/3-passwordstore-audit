@@ -66,6 +66,35 @@ function setPassword(string memory newPassword) external {
 
 **Impact:** Anyone can set/change the password of the contract, severly breaking the contract intended functionality.
 
-**Proof Of Concept:** 
+**Proof Of Concept:** Add the following to the `PasswordStore.t.sol` test file.
 
-**Recommended Mitigation:**
+<Details>
+<summary>Code</summary>
+
+```Javascript
+   function test_anyone_can_set_password(address randomAddress) public {
+        vm.assume(randomAddress != owner);
+        vm.prank(randomAddress);
+        string memory expectedPassword = "myNewPassword";
+        passwordStore.setPassword(expectedPassword);
+
+        vm.prank(owner);
+        string memory originalPassword = passwordStore.getPassword();
+        assertEq(expectedPassword, originalPassword);
+    }
+```
+
+</Details>
+
+
+**Recommended Mitigation:** Add Access control like
+
+```Javascript
+   function setPassword(string memory newPassword) external {
+@>        if (msg.sender != s_owner) {
+@>          revert PasswordStore__NotOwner();
+@>       }
+        s_password = newPassword;
+        emit SetNetPassword();
+    }
+```
