@@ -1,8 +1,4 @@
-### TITLE (Root cause + Impact)
-
-### [s-#] Variables stored in storage on-chain are visible to anyone, no matter the solidity visibility keyword meaning the password is not actually a private password.
-or
-### Storing the password on-chain makes it visible to anyone and no longer private.
+### [H-1] Storing the password on-chain makes it visible to anyone and no longer private.
 
 **Description:** All data stored on-chain is visible to anyone and can be read directly from the blockchain. The `PaswordStore::s_password` variable is intended to be a private variable and only accessed through the `Password::getPassword` function, which is intended to be only called by the owner of the contract.
 
@@ -51,8 +47,8 @@ The below test case shows how anyone can read the password directly from the blo
 
 ----------------------
 
-### TITLE (Root cause + Impact)
-### [S-#] `PasswordStore::setPassword` has no access controls, meaning a non-owner could change the password
+
+### [H-2] `PasswordStore::setPassword` has no access controls, meaning a non-owner could change the password
 
 **Description:** The `PasswordStore::setPassword` function is set to be an `external` function. However, the netspec of the function and overall purpose of the smart contract is that `This function allows only the owner to set a new password.`
 
@@ -97,4 +93,30 @@ function setPassword(string memory newPassword) external {
         s_password = newPassword;
         emit SetNetPassword();
     }
+```
+
+--------------------------------
+
+### [I-1] Incorrect Parameter in `PasswordStore::getPassword` Netspec
+
+**Description:**
+```javascript
+   /*
+     * @notice This function allows only the owner to retrieve the password.
+     */
+    function getPassword() external view returns (string memory) {}
+```
+The function signature for `PasswordStore::getPassword` is `getPassword()`, but the netspec incorrectly suggests it should be `getPassword(string)`.
+
+**Impact:** 
+This discrepancy in the netspec leads to confusion.
+
+**Proof Of Concept:** 
+None.
+
+**Recommended Mitigation:** 
+Correct the netspec by removing the inaccurate parameter description.
+
+```diff
+- * @param newPassword The new password to set.
 ```
